@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-// import router from './routes/auth.router'
+import router from './routes/auth.router'
 import swaggerUi from 'swagger-ui-express';
 import { errorMiddleware } from '../../../packages/error-handler/error-middleware'
 
@@ -30,7 +30,7 @@ app.use('/docs-json', (req, res) => {
 })
 
 // Routes
-// app.use('/api', router)
+app.use('/api', router)
 
 app.use(errorMiddleware)
 

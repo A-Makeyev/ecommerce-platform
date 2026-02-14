@@ -1,16 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 
-
 declare global {
     namespace globalThis {
-        var prismadb: PrismaClient
+        // eslint-disable-next-line no-var
+        var prismadb: PrismaClient | undefined
     }
 }
 
-const prisma = new PrismaClient()
+const prismaClientSingleton = () => new PrismaClient()
 
-if (process.env.NODE_ENV === 'production') {
-    global.prismadb = prisma
+const prisma = globalThis.prismadb ?? prismaClientSingleton()
+
+if (process.env.NODE_ENV !== 'production') {
+    globalThis.prismadb = prisma
 }
 
 export default prisma
