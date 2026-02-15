@@ -1,10 +1,16 @@
 import Redis from 'ioredis'
 
 
-const redis = new Redis({
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    port: Number(process.env.REDIS_PORT) || 6379,
-    password: process.env.REDIS_PASSWORD,
+const REDIS_URI = process.env.REDIS_URI
+if (!REDIS_URI) {
+    throw new Error('REDIS_URI is required. Set it in your .env file.')
+}
+
+const redis = new Redis(REDIS_URI)
+
+redis.on('error', (err) => {
+    console.error('[Redis] Connection error:', err.message)
 })
 
+export const disconnect = () => redis.quit()
 export default redis

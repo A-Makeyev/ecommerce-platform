@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "reset": "npx kill-port 6001 8080 9229 && npx nx reset cache && npm run dev",
     "dev": "npx nx run-many --target=serve --all"
   },
   "type": "module",

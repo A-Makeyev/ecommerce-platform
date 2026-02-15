@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
-import ejs from 'ejs'
 import path from 'path'
+import ejs from 'ejs'
 
 
 dotenv.config()
@@ -10,6 +10,7 @@ const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT) || 587,
     service: process.env.SMTP_SERVICE,
+    secure: true,
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -19,6 +20,7 @@ const transporter = nodemailer.createTransport({
 const renderEmailTemplate = async (templateName: string, data: Record<string, any>): Promise<string> => {
     const templatePath = path.join(
         process.cwd(),
+        'apps',
         'auth-service',
         'src',
         'utils',
@@ -39,7 +41,7 @@ export const sendEmail = async (to: string, subject: string, templateName: strin
             subject,
             html
         })
-        
+
         return true
     } catch (err) {
         console.error('Error sending email:', err)

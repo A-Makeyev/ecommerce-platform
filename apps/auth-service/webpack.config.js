@@ -1,11 +1,17 @@
-const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join } = require('path');
-const webpack = require('webpack');
-require('dotenv').config();
+const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin')
+const { join, resolve } = require('path')
+const webpack = require('webpack')
+require('dotenv').config()
 
 module.exports = {
   output: {
-    path: join(__dirname, 'dist'),
+    path: join(__dirname, 'dist')
+  },
+  resolve: {
+    alias: {
+      "@packages": resolve(__dirname, '../../packages')
+    },
+    extensions: ['.ts', '.js']
   },
   plugins: [
     new NxAppWebpackPlugin({
@@ -16,11 +22,11 @@ module.exports = {
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
-      externalDependencies: 'all',
+      externalDependencies: 'all'
     }),
     new webpack.DefinePlugin({
       'process.env.DATABASE_URL': JSON.stringify(process.env.DATABASE_URL),
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     })
   ],
-};
+}

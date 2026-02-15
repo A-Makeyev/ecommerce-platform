@@ -1,7 +1,7 @@
-import prisma from "../../../../packages/libs/prisma"
+import prisma from "@packages/libs/prisma"
+import { ValidationError } from "@packages/error-handler"
 import { NextFunction, Request, Response } from "express"
 import { checkOtpRestrictions, sendOtp, trackOtpRequest, validateRegistrationData } from "../utils/auth.helper"
-import { ValidationError } from "../../../../packages/error-handler"
 
 
 export const userRegistration = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +15,7 @@ export const userRegistration = async (req: Request, res: Response, next: NextFu
             return next(new ValidationError('Email already in use'))
         }
 
-        await checkOtpRestrictions(email, next) 
+        await checkOtpRestrictions(email, next)
         await trackOtpRequest(email, next)
         await sendOtp(name, email, 'user-activation-email')
 
