@@ -1,6 +1,6 @@
-import './global.css'
-import Header from '../shared/widgets/header'
 import { Poppins, Roboto } from 'next/font/google'
+import Header from '../shared/widgets/header'
+import './global.css'
 
 
 export const metadata = {

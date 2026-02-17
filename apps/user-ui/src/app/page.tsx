@@ -2,7 +2,9 @@
 
 const Page = () => {
     return (
-        <div></div>
+        <div className="">
+
+        </div>
     )
 }
 
