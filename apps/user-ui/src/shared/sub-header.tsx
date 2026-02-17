@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { navItems } from '../configs/constants'
 import { AlignLeft, ChevronDown, Search } from 'lucide-react'
 import Link from 'next/link'
@@ -12,6 +12,8 @@ import HeartIcon from '../assets/svgs/heart-icon'
 const HeaderBottom = () => {
     const [show, setShow] = useState(false)
     const [sticky, setSticky] = useState(false)
+    const [searchOpen, setSearchOpen] = useState(false)
+    const searchRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const handleScroll = () => {
@@ -26,29 +28,70 @@ const HeaderBottom = () => {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+                setSearchOpen(false)
+            }
+        }
+
+        if (searchOpen) {
+            document.addEventListener('mousedown', handleClickOutside)
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [searchOpen])
+
     return (
         <div className={`${sticky ? "fixed top-0 left-0 z-[100] bg-white shadow-lg" : "relative"} w-full transition-all duration-300`}>
             <div className={`${sticky ? "pt-3" : "py-0"} w-[80%] relative m-auto flex items-center justify-between`}>
                 <div
-                    className={`${sticky && "-mb-2"} w-[250px] flex items-center justify-between px-5 h-[50px] bg-[#3489FF] cursor-pointer`}
+                    className={`${show && sticky ? "rounded-t-lg" : show ? "" : sticky ? "rounded-lg" : "rounded-b-lg"} w-[250px] flex items-center justify-between px-5 h-[50px] bg-[#3489FF] transition-all duration-300 cursor-pointer`}
                     onClick={() => setShow(!show)}
                 >
                     <div className="flex items-center gap-2">
                         <AlignLeft color="white" />
                         <span className="text-white font-medium">All Categories</span>
                     </div>
-                    { show ?
+                    {show ?
                         <ChevronDown color="white" className="rotate-180 transition duration-300" />
                         :
                         <ChevronDown color="white" className="transition duration-300" />
                     }
                 </div>
-                <div className={`${sticky ? "top-[70px]" : "top-[50px]"} ${show ? "opacity-100 visible" : "opacity-0 invisible"} absolute left-0 w-[250px] h-[400px] bg-[#F5F5F5] transition-all duration-300`}>
+                <div className={`${sticky ? "top-[80px]" : "top-[50px]"} ${show ? "opacity-100 visible" : "opacity-0 invisible"} absolute left-0 w-[250px] h-[400px] bg-[#F5F5F5] transition-all duration-300`}>
 
                 </div>
+
+                <div className="w-[30%] relative flex justify-start">
+                    {sticky && (
+                        <div ref={searchRef} className={`${searchOpen ? "w-[300px]" : "w-[55px]"} transition-all duration-300`}>
+                            <div className="flex items-center h-[50px] border-[2px] border-[#3489FF] rounded-lg bg-white overflow-hidden">
+                                <input
+                                    type="text"
+                                    placeholder="Search products"
+                                    autoFocus={searchOpen}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            console.log('Search:', e.currentTarget.value)
+                                            setSearchOpen(false)
+                                        }
+                                    }}
+                                    className={`flex-1 px-3 text-sm font-medium outline-none transition-all duration-300 ${searchOpen ? "opacity-100" : "opacity-0 hidden"}`}
+                                />
+                                <button
+                                    onClick={() => setSearchOpen(!searchOpen)}
+                                    className="w-[55px] h-full bg-[#3489FF] flex items-center justify-center active:scale-95 transition-all flex-shrink-0"
+                                >
+                                    <Search color="white" className="hover:scale-105 transition-transform" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 <div className="flex items-center">
-                    { navItems.map((item: NavItemTypes, index: number) => (
-                        <Link href={item.href} key={index} className="px-5 font-medium text-lg">
+                    {navItems.map((item: NavItemTypes, index: number) => (
+                        <Link href={item.href} key={index} className="px-5 font-medium text-lg hover:text-blue-600 transition">
                             {item.title}
                         </Link>
                     ))}
