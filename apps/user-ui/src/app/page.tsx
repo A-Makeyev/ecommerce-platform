@@ -2,7 +2,7 @@
 
 const Page = () => {
     return (
-        <div className="h-[200vh]">
+        <div className="">
 
         </div>
     )
