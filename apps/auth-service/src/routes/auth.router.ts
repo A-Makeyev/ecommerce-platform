@@ -1,13 +1,15 @@
 import express, { Router } from "express"
 import { 
+    getUser, 
+    userLogin, 
     forgotPassword, 
     refreshToken, 
     resetPassword, 
-    userLogin, 
     userRegistration, 
     userVerification, 
     verifyUserForgotPassword 
 } from "../controller/auth.controller"
+import isAuthenticated from "@packages/middleware/is-authenticated"
 
 
 const router: Router = express.Router()
@@ -19,5 +21,7 @@ router.post('/refresh-token', refreshToken)
 router.post('/forgot-password', forgotPassword)
 router.post('/verify-forgot-password', verifyUserForgotPassword)
 router.post('/reset-password', resetPassword)
+
+router.get('/authenticate-user', isAuthenticated, getUser)
 
 export default router

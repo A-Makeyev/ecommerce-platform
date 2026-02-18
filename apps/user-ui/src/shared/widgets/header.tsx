@@ -1,12 +1,17 @@
+'use client'
+
 import { Search } from 'lucide-react'
 import Link from 'next/link'
 import ProfileIcon from '../../assets/svgs/profile-icon'
 import HeartIcon from '../../assets/svgs/heart-icon'
 import CartIcon from '../../assets/svgs/cart-icon'
 import HeaderBottom from '../sub-header'
+import useUser from 'apps/user-ui/src/hooks/useUser'
 
 
 const Header = () => {
+    const { user, isLoading, isError, refetch } = useUser()
+
     return (
         <div className="w-full bg-white">
             <div className="w-[80%] py-5 m-auto flex items-center justify-between">
@@ -23,9 +28,26 @@ const Header = () => {
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 cursor-pointer">
-                        <Link href={"/login"} className="flex items-center justify-center w-[40px] h-[40px] border-2 border-[#010F1C1A] rounded-full hover:scale-105 transition-transform">
-                            <ProfileIcon />
-                        </Link>
+                        {!isLoading && user ? (
+                            <>
+                                <Link href={"/profile"} className="font-medium hover:text-slate-700 transition">
+                                    {user?.name?.split(' ')[0]}
+                                </Link>
+                                <Link href={"/profile"} className="flex items-center justify-center w-[40px] h-[40px] border-2 border-[#010F1C1A] rounded-full hover:scale-105 transition-transform">
+                                    <ProfileIcon />
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link href={"/login"} className="font-medium hover:text-slate-700 transition">
+                                    Login
+                                </Link>
+                                <Link href={"/login"} className="flex items-center justify-center w-[40px] h-[40px] border-2 border-[#010F1C1A] rounded-full hover:scale-105 transition-transform">
+                                    <ProfileIcon />
+                                </Link>
+                            </>
+                        )}
+                    
                     </div>
                     <div className="flex items-center gap-5">
                         <Link href={"/whishlist"} className="relative hover:text-slate-600 transition">

@@ -164,6 +164,19 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
+export const getUser = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        const user = req.user
+
+        res.status(201).json({
+            success: true,
+            user
+        })
+    } catch (err) {
+        return next(err)
+    }
+}
+
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
     await handleForgotPassword(req, res, next, 'user')
 }

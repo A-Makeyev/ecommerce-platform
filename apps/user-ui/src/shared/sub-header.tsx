@@ -7,6 +7,7 @@ import Link from 'next/link'
 import ProfileIcon from '../assets/svgs/profile-icon'
 import CartIcon from '../assets/svgs/cart-icon'
 import HeartIcon from '../assets/svgs/heart-icon'
+import useUser from 'apps/user-ui/src/hooks/useUser'
 
 
 const HeaderBottom = () => {
@@ -14,6 +15,7 @@ const HeaderBottom = () => {
     const [sticky, setSticky] = useState(false)
     const [searchOpen, setSearchOpen] = useState(false)
     const searchRef = useRef<HTMLDivElement>(null)
+    const { user, isLoading, isError, refetch } = useUser()
 
     useEffect(() => {
         const handleScroll = () => {
