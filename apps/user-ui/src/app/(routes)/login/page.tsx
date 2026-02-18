@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
+import axios, { AxiosError } from 'axios'
 import GoogleButton from 'apps/user-ui/src/shared/components/google-button'
 import Link from 'next/link'
 
@@ -22,10 +24,32 @@ const Login = () => {
     const { 
         register, 
         handleSubmit, 
-        formState: { errors } 
-    } = useForm<FormData>()
+        formState: { errors, isValid, isSubmitting } 
+    } = useForm<FormData>({
+        mode: 'onChange'
+    })
     
-    const onSubmit = (data: FormData) => {}
+    const loginMutation = useMutation({
+        mutationFn: async (data: FormData) => {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user-login`, 
+                data, 
+                { withCredentials: true }
+            )
+            return response.data
+        },
+        onSuccess: (data) => {
+            setServerError(null)
+            router.push('/')
+        },
+        onError: (error: AxiosError<{message?: string}>) => {
+            const errorMessage = error.response?.data?.message || 'Something went wrong'
+            setServerError(errorMessage)
+        }
+    })
+
+    const onSubmit = (data: FormData) => {
+        loginMutation.mutate(data)
+    }
 
     return (
         <div className="w-full py-10 min-h-[85vh] bg-[#F1F1F1]">
@@ -122,11 +146,18 @@ const Login = () => {
                                 Forgot password?
                             </Link> 
                         </div>
-                        <button type="submit" className="w-full text-lg py-2 rounded-lg cursor-pointer bg-black text-white hover:bg-gray-800 transition">
-                            Login
+                        <button 
+                            type="submit" 
+                            disabled={!isValid || isSubmitting || loginMutation.isPending} 
+                            className="w-full text-lg py-2 rounded-lg flex justify-center cursor-pointer bg-black text-white hover:enabled:bg-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed">
+                            {loginMutation.isPending ? (
+                                <Loader2 size={28} className="animate-spin mr-2" />
+                            ) : (
+                                'Login'
+                            )}
                         </button>
                         {serverError && (
-                            <p className="text-red-500 text-sm font-medium text-center">
+                            <p className="text-red-500 font-medium text-center">
                                 {serverError} 
                             </p>
                         )}

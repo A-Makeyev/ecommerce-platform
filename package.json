@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "reset": "npx kill-port 6001 8080 9229 && npx nx reset cache && npm run dev",
+    "reset": "npx kill-port 6001 8080 9229 && npx nx reset",
     "dev": "npx nx run-many --target=serve --all",
     "auth-docs": "node apps/auth-service/src/swagger.js",
-    "ui": "npx nx run-many --target=dev --all --projects=user-ui"
+    "ui": "npx nx run-many --target=dev --all --projects=user-ui",
+    "start": "concurrently \"npm run dev\" \"npm run ui\""
   },
   "type": "module",
   "private": true,
@@ -30,6 +31,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-hook-form": "^7.71.1",
+    "react-hot-toast": "^2.6.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1"
   },
@@ -69,6 +71,7 @@
     "@types/react-dom": "19.0.0",
     "@types/swagger-ui-express": "^4.1.8",
     "autoprefixer": "10.4.13",
+    "concurrently": "^9.2.1",
     "dotenv": "^17.3.1",
     "esbuild": "^0.19.2",
     "i": "^0.3.7",

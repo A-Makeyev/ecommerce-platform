@@ -7,6 +7,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Eye, EyeOff, Mail, Lock, UserPen, Loader2 } from 'lucide-react'
 import axios, { AxiosError } from 'axios'
 import GoogleButton from 'apps/user-ui/src/shared/components/google-button'
+import toast from 'react-hot-toast'
 import Link from 'next/link'
 
 
@@ -58,6 +59,11 @@ const Signup = () => {
             setCanResend(false)
             setTimer(60)
             startResendTimer()
+            toast.success('Verification code sent')
+        },
+        onError: (error: AxiosError<{message?: string}>) => {
+            const errorMessage = error.response?.data?.message || 'Something went wrong'
+            toast.error(errorMessage)
         }
     })
 
@@ -75,6 +81,10 @@ const Signup = () => {
         },
         onSuccess: () => {
             router.push('/login')
+        },
+        onError: (error: AxiosError<{message?: string}>) => {
+            const errorMessage = error.response?.data?.message || 'Something went wrong'
+            toast.error(errorMessage)
         }
     })
 
@@ -107,7 +117,9 @@ const Signup = () => {
     }
 
     const handleResendOtp = () => {
- 
+        if (userData) {
+            signupMutation.mutate(userData)
+        }
     }
 
     return (
@@ -219,7 +231,7 @@ const Signup = () => {
                             <button 
                                 type="submit" 
                                 disabled={!isValid || isSubmitting || signupMutation.isPending}  
-                                className="w-full text-lg py-2 rounded-lg cursor-pointer bg-black text-white flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed hover:enabled:bg-gray-800 transition">
+                                className="w-full text-lg py-2 rounded-lg cursor-pointer bg-black text-white flex justify-center disabled:opacity-70 disabled:cursor-not-allowed hover:enabled:bg-gray-800 transition">
                                 {signupMutation.isPending ? (
                                     <Loader2 size={28} className="animate-spin mr-2" />
                                 ) : (
@@ -229,7 +241,7 @@ const Signup = () => {
                                 {
                                     signupMutation?.isError &&
                                     signupMutation.error instanceof AxiosError && (
-                                        <p className="my-4 text-red-500 text-sm font-medium text-center">
+                                        <p className="my-4 text-red-500 font-medium text-center">
                                             {signupMutation.error.response?.data?.message || 'Something went wrong'}
                                         </p>
                                     )
@@ -259,7 +271,7 @@ const Signup = () => {
                             <button 
                                 disabled={verifyOtpMutation.isPending || !otp.every(digit => digit !== '')}
                                 onClick={() => verifyOtpMutation.mutate()}
-                                className="w-full text-lg mt-6 py-2 rounded-lg cursor-pointer bg-black text-white flex justify-center items-center disabled:opacity-70 disabled:cursor-not-allowed hover:enabled:bg-gray-800 transition"
+                                className="w-full text-lg mt-6 py-2 rounded-lg cursor-pointer bg-black text-white flex justify-center disabled:opacity-70 disabled:cursor-not-allowed hover:enabled:bg-gray-800 transition"
                             >
                                 {verifyOtpMutation.isPending ? (
                                     <Loader2 size={28} className="animate-spin mr-2" />
@@ -270,7 +282,7 @@ const Signup = () => {
                             {
                                 verifyOtpMutation?.isError && 
                                 verifyOtpMutation?.error instanceof AxiosError && (
-                                    <p className="my-4 text-red-500 text-sm font-medium text-center">
+                                    <p className="my-4 text-red-500 font-medium text-center">
                                         {verifyOtpMutation?.error?.response?.data?.message || 'Something went wrong'}
                                     </p>
                                 )

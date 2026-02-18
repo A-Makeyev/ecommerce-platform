@@ -1,10 +1,18 @@
 import prisma from "@packages/libs/prisma"
 import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
+import jwt, { JsonWebTokenError } from "jsonwebtoken"
 import { AuthError, ValidationError } from "@packages/error-handler"
 import { NextFunction, Request, Response } from "express"
-import { checkOtpRestrictions, handleForgotPassword, sendOtp, trackOtpRequest, validateRegistrationData, verifyForgotPasswordOtp, verifyOtp } from "../utils/auth.helper"
 import { setCookie } from "../utils/cookies/setCookie"
+import { 
+    checkOtpRestrictions, 
+    handleForgotPassword, 
+    sendOtp, 
+    trackOtpRequest, 
+    validateRegistrationData, 
+    verifyForgotPasswordOtp,
+    verifyOtp
+} from "../utils/auth.helper"
 
 
 export const userRegistration = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +23,7 @@ export const userRegistration = async (req: Request, res: Response, next: NextFu
         const existingUser = await prisma.users.findUnique({ where: { email } })
 
         if (existingUser) {
-            return next(new ValidationError('User already exists'))
+            return next(new ValidationError(`${email} is already registered`))
         }
 
         await checkOtpRestrictions(email)
@@ -41,7 +49,7 @@ export const userVerification = async (req: Request, res: Response, next: NextFu
         const existingUser = await prisma.users.findUnique({ where: { email } })
 
         if (existingUser) {
-            return next(new ValidationError('User already exists'))
+            return next(new ValidationError(`${email} is already registered`))
         }
 
         await verifyOtp(email, otp)
@@ -111,6 +119,51 @@ export const userLogin = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const refreshToken = req.cookies.refresh_token
+
+        if (!refreshToken) {
+            return new ValidationError('Refresh token not found')
+        }
+
+        const decodedToken = jwt.verify(
+            refreshToken,
+            process.env.REFRESH_TOKEN as string
+        ) as { id: string, role: string }
+
+        if (!decodedToken || !decodedToken.id || !decodedToken.role) {
+            return new JsonWebTokenError('Invalid refresh token')
+        }
+
+        // if (decodedToken.role === 'user') 
+        const user = await prisma.users.findUnique({ where: { id: decodedToken.id } })
+
+        if (!user) {
+            return new AuthError('User not found')
+        }
+
+        const newAccessToken = jwt.sign({
+            id: decodedToken.id, 
+            role: decodedToken.role,
+        }, process.env.ACCESS_TOKEN as string, { expiresIn: '15m' })
+
+        setCookie(res, 'access_token', newAccessToken)
+
+        res.status(201).json({
+            message: 'Token refreshed successfully',
+            success: true,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        })
+    } catch (err) {
+        return next(err)
+    }
+}
+
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
     await handleForgotPassword(req, res, next, 'user')
 }
@@ -130,7 +183,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
         const user = await prisma.users.findUnique({ where: { email } })
 
         if (!user) {
-            return next(new ValidationError('User not found'))
+            return next(new ValidationError('User does not exist'))
         }
 
         const isPasswordSame = await bcrypt.compare(newPassword, user.password!)
