@@ -1,5 +1,5 @@
-import prisma from "@packages/libs/prisma"
 import bcrypt from "bcryptjs"
+import prisma from "@packages/libs/prisma"
 import jwt, { JsonWebTokenError } from "jsonwebtoken"
 import { AuthError, ValidationError } from "@packages/error-handler"
 import { NextFunction, Request, Response } from "express"
@@ -152,12 +152,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
 
         res.status(201).json({
             message: 'Token refreshed successfully',
-            success: true,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email
-            }
+            success: true
         })
     } catch (err) {
         return next(err)
