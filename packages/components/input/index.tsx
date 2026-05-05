@@ -42,7 +42,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(
 
         const iconStyle =
         `
-            absolute ${isSm ? 'top-[12px] left-3' : isLg ? 'top-[24px] left-6' : 'top-[20px] left-4'} 
+            absolute ${isSm ? 'top-[10px] left-3' : isLg ? 'top-[22px] left-6' : 'top-[16px] left-4'} 
             text-slate-400 pointer-events-none transition-colors
             peer-focus:text-white peer-[:not(:placeholder-shown)]:text-white
         `
@@ -80,7 +80,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, Props>(
                     )}
                 </div>
                 {error && (
-                    <p className="mt-2 text-red-500 font-medium text-xs">
+                    <p className="mt-2 text-red-500 font-medium">
                         {error}
                     </p>
                 )}

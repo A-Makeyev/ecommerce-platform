@@ -69,11 +69,11 @@ const CustomProperties = ({ control, errors }: any) => {
                                             <button
                                                 type="button"
                                                 onClick={addProperty}
-                                                className="flex h-[40px] items-center gap-2 px-4 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-md transition"
+                                                className="flex items-center gap-2 ml-2 w-[20%] text-blue-500 hover:text-blue-400 transition"
                                                 title="Add property"
                                             >
                                                 <PlusCircle size={20} />
-                                                <span>Add</span>
+                                                <span>Add Property</span>
                                             </button>
                                         </div>
                                     </div>
@@ -118,7 +118,7 @@ const CustomProperties = ({ control, errors }: any) => {
                                                     </div>
                                                     <div className="flex flex-wrap gap-2 mt-3">
                                                         {property.values.map((value, vIndex) => (
-                                                            <span key={vIndex} className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-300 rounded-md text-[10px] font-bold">
+                                                            <span key={vIndex} className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-300 rounded-md text-xs font-bold">
                                                                 {value}
                                                             </span>
                                                         ))}

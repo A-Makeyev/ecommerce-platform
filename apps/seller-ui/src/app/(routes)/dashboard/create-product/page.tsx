@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { ChevronRight, ClipboardPen, Clock, Link, Package, Tag } from 'lucide-react'
+import { ChevronDown, ChevronRight, ClipboardPen, Clock, DollarSign, Link, Package, Tag } from 'lucide-react'
 import ImagePlaceholder from 'apps/seller-ui/src/shared/components/image-placeholder'
 import Input from 'packages/components/input'
 import ColorSelector from 'packages/components/color-selector'
@@ -14,6 +14,7 @@ const Page = () => {
     const [images, setImages] = useState<(File | null)[]>([null])
     const [isChanged, setIsChanged] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [isCodOpen, setIsCodOpen] = useState(false)
 
     const { 
         register, 
@@ -192,6 +193,44 @@ const Page = () => {
                     </div>
                     <div className="pt-2 border-t border-slate-700/50">
                         <CustomProperties control={control} errors={errors} /> 
+                    </div>
+                    <div className="pt-2 border-t border-slate-700/50">
+                        <div className="w-[240px]">
+                            <label className="block font-bold text-slate-300 text-base tracking-tight mb-3">
+                                Cash On Delivery
+                            </label>
+                            <div className="relative my-2">
+                                <div className="absolute top-[11px] left-3 text-slate-400 pointer-events-none">
+                                    <DollarSign size={16} />
+                                </div>
+                                <select
+                                    defaultValue="yes"
+                                    className="w-full pl-9 pr-10 py-1.5 min-h-[40px] appearance-none outline-0 rounded-lg border border-slate-400 focus:border-[#80DEEA] transition-all duration-300 ease-out bg-transparent text-sm text-white"
+                                    onClick={() => setIsCodOpen(prev => !prev)}
+                                    {...(() => {
+                                        const { onBlur, ...rest } = register('cash_on_delivery', { required: 'Cash on delivery is required' })
+                                        return {
+                                            ...rest,
+                                            onBlur: (e: React.FocusEvent<HTMLSelectElement>) => {
+                                                setIsCodOpen(false)
+                                                onBlur(e)
+                                            }
+                                        }
+                                    })()}
+                                >
+                                    <option value="yes" className="bg-slate-900">Yes</option>
+                                    <option value="no" className="bg-slate-900">No</option>
+                                </select>
+                                <div className={`absolute top-[11px] right-3 text-slate-400 pointer-events-none transition-transform ${isCodOpen ? 'rotate-180' : 'rotate-0'}`}>
+                                    <ChevronDown size={20} />
+                                </div>
+                            </div>
+                            {errors.cash_on_delivery && (
+                                <p className="mt-2 text-red-500 font-medium">
+                                    {errors.cash_on_delivery.message as string}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
